@@ -1,7 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const Variable = require('./variableModel'); // Asegúrate de que la ruta sea correcta
+const Setting = require('./settingModel'); 
+//const TipoDeCuenta = require("./TipoDeCuenta");
 
 const app = express();
 const port = 3000;
@@ -14,6 +15,9 @@ const MONGO_PORT = '27017';
 
 const uri = `mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_SERVER}:${MONGO_PORT}/${MONGO_DB_NAME}`;
 
+
+//const cuenta2 = new TipoDeCuenta(987654321, 0, "Lilly Arroyo");
+
 mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('MongoDB connected...'))
   .catch(err => console.log(err));
@@ -25,42 +29,51 @@ app.get('/', (req, res) => {
   res.send('API is working!');
 });
 
-app.get('/variables', async (req, res) => {
+app.get('/mongodb', async (req, res) => {
   try {
-    const variables = await Variable.find();
-    res.json(variables);
+   const { collection, filter } = req.body;
+   const settings = await Setting.find({ collection, filter });
+   //const settings = cuenta2.estadocuenta();
+   //console.log(settings);
+    res.json(settings);
   } catch (err) {
     res.status(500).send(err);
   }
 });
 
-app.post('/variable', async (req, res) => {
+app.post('/mongodb', async (req, res) => {
   try {
-    const newVariable = new Variable({ value: req.body.variable });
-    const savedVariable = await newVariable.save();
-    res.json({ message: 'Variable creada', variable: savedVariable });
+    const { collection, values } = req.body;
+    const newSetting = new Setting({ collection, filter: { id: values.id }, values });
+    const savedSetting = await newSetting.save();
+    res.json({ message: 'Setting created', setting: savedSetting });
+    //const {cuantity} = req.body;
+    //const settings = cuenta2.abonardinero(cuantity);
+    //res.json(settings);
   } catch (err) {
     res.status(500).send(err);
   }
 });
 
-app.put('/variable/:id', async (req, res) => {
+app.put('/mongodb', async (req, res) => {
   try {
-    const updatedVariable = await Variable.findByIdAndUpdate(
-      req.params.id,
-      { value: req.body.variable },
+    const { collection, filter, values } = req.body;
+    const updatedSetting = await Setting.findOneAndUpdate(
+      { collection, filter },
+      { values },
       { new: true }
     );
-    res.json({ message: 'Variable actualizada', variable: updatedVariable });
+    res.json({ message: 'Setting updated', setting: updatedSetting });
   } catch (err) {
     res.status(500).send(err);
   }
 });
 
-app.delete('/variable/:id', async (req, res) => {
+app.delete('/mongodb', async (req, res) => {
   try {
-    await Variable.findByIdAndDelete(req.params.id);
-    res.json({ message: 'Variable eliminada' });
+    const { collection, filter } = req.body;
+    await Setting.findOneAndDelete({ collection, filter });
+    res.json({ message: 'Setting deleted' });
   } catch (err) {
     res.status(500).send(err);
   }
@@ -69,3 +82,4 @@ app.delete('/variable/:id', async (req, res) => {
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}/`);
 });
+
