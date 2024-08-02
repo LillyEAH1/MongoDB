@@ -1,0 +1,24 @@
+//Método DELETE y POST(GET/FIND)
+{
+  "collection": "mongodb",
+  "filter": {
+    "id": "skittles"
+  }
+}
+
+//Método POST y PUT
+{
+  "collection": "mongodb",
+  "filter": {
+    "id": "skittles"
+  },
+  "values": {
+    "id": "skittles",
+    "name": "skittles-demo-updated",
+    "description": "An updated skittles demo for kids",
+    "flag": "sandbox",
+    "live": "https://www.sateav.com:8080/alexa",
+    "sandbox": "https://creative-mustang-fully.ngrok-free.app/alexa/redirect",
+    "status": "1"
+  }
+}

@@ -29,13 +29,15 @@ app.get('/', (req, res) => {
   res.send('API is working!');
 });
 
-app.get('/mongodb', async (req, res) => {
+//get
+app.post('/mongodb/find', async (req, res) => {
   try {
    const { collection, filter } = req.body;
    const settings = await Setting.find({ collection, filter });
    //const settings = cuenta2.estadocuenta();
    //console.log(settings);
     res.json(settings);
+    console.log({message:"Simulando un find pero sirviendo en post"});
   } catch (err) {
     res.status(500).send(err);
   }
